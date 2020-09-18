@@ -1,5 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {ActivatedRoute} from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import {
   NbGetters, NbSortDirection, NbSortRequest,
   NbTreeGridDataSource, NbTreeGridDataSourceBuilder
@@ -81,6 +81,7 @@ export class ProteinListTreeGridComponent implements OnInit {
   constructor(private dataSourceBuilder: NbTreeGridDataSourceBuilder<ProteinInterface>,
               private proteinService: ProteinService,
               private route: ActivatedRoute,
+              private router: Router,
               private formBuilder: FormBuilder,
               private sanitizer: DomSanitizer,
               ) {
@@ -158,24 +159,24 @@ export class ProteinListTreeGridComponent implements OnInit {
         this.aux_inter = aux;
         this.aux_inter.children = [
           {
-            idprotein: '', actions: new URL(
-              'http://localhost:4201/pages/tables/fusion-peptide?idprot=' + String(this.idProt)),
-            page: 'Fusion Peptide'
+            idprotein: '', actions:
+              '../fusion-peptide?idprot=' + String(this.idProt),
+            page: 'Fusion Peptide',
           },
           {
-            idprotein: '', actions: new URL(
-              'http://localhost:4201/pages/tables/taxonomy-virus?idtax=' + String(this.idTax)),
-            page: 'Virus'
+            idprotein: '', actions:
+              '../taxonomy-virus?idtax=' + String(this.idTax),
+            page: 'Virus',
           },
           {
-            idprotein: '', actions: new URL(
-              'http://localhost:4201/pages/tables/protein-references?idprot=' + String(this.idProt)),
-            page: 'References'
+            idprotein: '', actions:
+              '../protein-references?idprot=' + String(this.idProt),
+            page: 'References',
           },
           {
-            idprotein: '', actions: new URL(
-              'http://localhost:4201/pages/tables/inhibitor-antibody?idprot=' + String(this.idProt)),
-            page: 'Inhibitors / Antibodies'
+            idprotein: '', actions:
+              '../inhibitor-antibody?idprot=' + String(this.idProt),
+            page: 'Inhibitors / Antibodies',
           },
         ];
         this.aux_inter.expanded = false;
@@ -244,7 +245,7 @@ export class ProteinListTreeGridComponent implements OnInit {
       this.current_page = 1;
       this.fetchProtein();
     } else {
-      window.open('http://localhost:4201/pages/tables/protein?search='
+      this.gotoURLSameApp('../protein?search='
         + this.search_form.value, '_self');
     }
   }
@@ -313,44 +314,62 @@ export class ProteinListTreeGridComponent implements OnInit {
   goToTools(type: string) {
     if (type === 'BLAST') {
       if ((this.search_tools.match(/>/g) || []).length > 0) {
+        this.gotoURLSameApp('../../blast?sequence=' + encodeURI(this.search_tools));
+        /**
         window.open('http://localhost:4201/pages/tools/blast?sequence=' + encodeURI(this.search_tools),
           '_blank');
+        */
       } else {
         alert('ERROR: SELECT AT LEAST 1 SEQUENCE');
       }
     } else if (type === 'CLUSTAL') {
       if ((this.search_tools.match(/>/g) || []).length > 2) {
-        window.open('http://localhost:4201/pages/tools/clustal?sequence=' + encodeURI(this.search_tools),
-          '_blank');
+        this.gotoURLSameApp('../../tools/clustal?sequence=' + encodeURI(this.search_tools));
+        /**
+         window.open('http://localhost:4201/pages/tools/clustal?sequence=' + encodeURI(this.search_tools),
+         '_blank');
+         */
       } else {
         alert('ERROR: SELECT AT LEAST 3 SEQUENCES');
       }
     } else if (type === 'IEDB') {
       if ((this.search_tools.match(/>/g) || []).length === 1) {
+        this.gotoURLSameApp('../../tools/epitopes?sequence=' + encodeURI(this.search_tools));
+        /**
         window.open('http://localhost:4201/pages/tools/epitopes?sequence=' + encodeURI(this.search_tools),
           '_blank');
+         */
       } else {
         alert('ERROR: SELECT 1 SEQUENCE');
       }
     } else if (type === 'HMMER') {
       if ((this.search_tools.match(/>/g) || []).length === 1) {
+        this.gotoURLSameApp('../../tools/hmmer?sequence=' + encodeURI(this.search_tools));
+        /**
         // const search_tools_hmmer = this.search_tools.replace('>' + String(id) + '\n', '');
         window.open('http://localhost:4201/pages/tools/hmmer?sequence=' + encodeURI(this.search_tools),
           '_blank');
+         */
       } else {
         alert('ERROR: SELECT 1 SEQUENCE');
       }
     } else if (type === 'WEBLOGO') {
       if ((this.search_tools.match(/>/g) || []).length > 1) {
+        this.gotoURLSameApp('../../tools/weblogo?sequence=' + encodeURI(this.search_tools));
+        /**
         window.open('http://localhost:4201/pages/tools/weblogo?sequence=' + encodeURI(this.search_tools),
           '_blank');
+         */
       } else {
         alert('ERROR: SELECT AT LEAST 2 SEQUENCES');
       }
     } else if (type === 'ML') {
       if ((this.search_tools.match(/>/g) || []).length === 1) {
+        this.gotoURLSameApp('../../tools/predict?sequence=' + encodeURI(this.search_tools));
+        /**
         window.open('http://localhost:4201/pages/tools/predict?sequence=' + encodeURI(this.search_tools),
           '_blank');
+         */
       } else {
         alert('ERROR: SELECT 1 SEQUENCE');
       }
@@ -390,7 +409,6 @@ export class ProteinListTreeGridComponent implements OnInit {
         }
 
         this.keepData(data_to_print);
-        
 
         /**
         const data_send = {data: data_print};
@@ -427,5 +445,14 @@ export class ProteinListTreeGridComponent implements OnInit {
 
     this.fileUrl = this.sanitizer.bypassSecurityTrustResourceUrl(window.URL.createObjectURL(blob));
 
+  }
+
+  gotoURLSameApp(directory, target= '_blank') {
+
+    const url = this.router.serializeUrl(
+      this.router.createUrlTree([directory], { relativeTo: this.route }),
+    );
+
+    window.open(decodeURIComponent(url), target);
   }
 }
