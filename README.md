@@ -2,7 +2,7 @@ In order to run the aplication locally, one must use the command docker pull for
 
 The files regarding the settings of the Django app are inserted into /my-app-dir/vfp_webserver/settings.py within the container itself (Django_/vfp_webserver/settings.py within the Github repository).
 
-All the Angular files are inserted within the directory "app" of its container.
+All the Angular files are inserted within the directory "app" of its container. In order to define the URL for the API, one must update the file Angular_\ngx-admin\src\env.js.
 
 ----------------
 
