@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse} from '@angular/common/http';
 import { HttpHeaders } from '@angular/common/http';
+import {EnvService} from './env.service';
 
-export interface dataSeqs{
+export interface dataseqs{
   seqs?: string;
 }
 
@@ -10,10 +11,14 @@ export interface dataSeqs{
   providedIn: 'root',
 })
 export class WeblogoService {
+  API_URL = '';
   httpOptions = {};
-  data: dataSeqs = {};
+  data: dataseqs = {};
 
-  constructor(private httpClient: HttpClient) { }
+  constructor(private httpClient: HttpClient,
+              private env: EnvService) {
+    this.API_URL = env.apiUrl;
+  }
 
   send(seqsSend: string) {
     this.httpOptions = {
@@ -22,6 +27,6 @@ export class WeblogoService {
       }),
     };
     this.data.seqs = seqsSend;
-    return this.httpClient.post<any>('http://localhost:8000/weblogoclustal/', this.data, this.httpOptions);
+    return this.httpClient.post<any>(`${this.API_URL}/weblogoclustal/`, this.data, this.httpOptions);
   }
 }

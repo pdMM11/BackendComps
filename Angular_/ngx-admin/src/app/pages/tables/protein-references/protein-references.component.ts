@@ -11,6 +11,7 @@ import {ActivatedRoute} from '@angular/router';
 import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {HttpErrorResponse} from '@angular/common/http';
 import { DomSanitizer } from '@angular/platform-browser';
+import {EnvService} from '../../../services/env.service';
 
 
 interface ProteinReferencesInterface {
@@ -72,13 +73,18 @@ export class ProteinReferencesComponent implements OnInit {
   fileUrl;
   data_print;
 
+  API_URL = '';
+
   constructor(private dataSourceBuilder: NbTreeGridDataSourceBuilder<ProteinReferencesInterface>,
               private proteinreferencesService: ProteinReferencesService,
               private route: ActivatedRoute,
               private formBuilder: FormBuilder,
               private sanitizer: DomSanitizer,
-              ) {
+              private env: EnvService,
+  ) {
+    this.API_URL = env.apiUrl;
   }
+
 
   ngOnInit() {
     this.fetchProteinReference();
@@ -279,7 +285,7 @@ export class ProteinReferencesComponent implements OnInit {
     }
     // tslint:disable-next-line:one-line
     else {
-      window.open('http://localhost:8000/admin/crmapp/proteinreferences/',
+      window.open(`${this.API_URL}/admin/crmapp/proteinreferences/`,
         '_blank');
     }
   }
@@ -350,7 +356,7 @@ export class ProteinReferencesComponent implements OnInit {
     this.put_form_ref = true;
     this.add_form_ref = false;
   }
-  
+
   keepData(data: string) {
     this.data_print = data;
 
@@ -359,7 +365,7 @@ export class ProteinReferencesComponent implements OnInit {
     this.fileUrl = this.sanitizer.bypassSecurityTrustResourceUrl(window.URL.createObjectURL(blob));
 
   }
-  
+
 }
 
 

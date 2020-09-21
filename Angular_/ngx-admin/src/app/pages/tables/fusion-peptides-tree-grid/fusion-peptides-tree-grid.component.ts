@@ -2,7 +2,7 @@ import {Component, Input, OnInit} from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import {
   NbGetters, NbSortDirection, NbSortRequest,
-  NbTreeGridDataSource, NbTreeGridDataSourceBuilder
+  NbTreeGridDataSource, NbTreeGridDataSourceBuilder,
 } from '@nebular/theme';
 import {FusionPeptideService} from '../../../services/fusion-peptide.service';
 import {PeptideReferencesService} from '../../../services/peptide-references.service';
@@ -12,6 +12,7 @@ import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {HttpErrorResponse} from '@angular/common/http';
 import {flatMap} from 'rxjs/operators';
 import { DomSanitizer } from '@angular/platform-browser';
+import {EnvService} from '../../../services/env.service';
 
 interface FusionPeptideInterface {
   idfusion_peptides?: string;
@@ -72,6 +73,7 @@ export class FusionPeptidesTreeGridComponent implements OnInit {
   struct_data = [];
   add_form: boolean = false;
   put_form: boolean = false;
+  API_URL = '';
 
   constructor(private dataSourceBuilder: NbTreeGridDataSourceBuilder<FusionPeptideInterface>,
               private fusionpeptideService: FusionPeptideService,
@@ -82,7 +84,9 @@ export class FusionPeptidesTreeGridComponent implements OnInit {
               private router: Router,
               private formBuilder: FormBuilder,
               private sanitizer: DomSanitizer,
+              private env: EnvService,
   ) {
+    this.API_URL = env.apiUrl;
   }
 
   ngOnInit() {
@@ -301,7 +305,7 @@ export class FusionPeptidesTreeGridComponent implements OnInit {
     }
     // tslint:disable-next-line:one-line
     else {
-      window.open('http://localhost:8000/admin/crmapp/fusionpeptides/',
+      window.open(`${this.API_URL}/admin/crmapp/fusionpeptides/`,
         '_blank');
     }
   }
@@ -391,7 +395,8 @@ export class FusionPeptidesTreeGridComponent implements OnInit {
      'exp_evidence', 'protein', 'virus'
      */
     this.data_all = [] as any;
-    let data_to_print = 'idfusion_peptides,residues,sequence,annotation_method,exp_evidence,protein,protein_name,virus\n';
+    let data_to_print = 'idfusion_peptides,residues,sequence,' +
+      'annotation_method,exp_evidence,protein,protein_name,virus\n';
     let protein = '';
     let taxonomy = '';
     if (this.protParam !== null) {

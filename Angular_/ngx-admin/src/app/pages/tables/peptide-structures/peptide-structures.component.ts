@@ -11,6 +11,7 @@ import {ActivatedRoute} from '@angular/router';
 import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {HttpErrorResponse} from '@angular/common/http';
 import { DomSanitizer } from '@angular/platform-browser';
+import {EnvService} from '../../../services/env.service';
 
 
 interface PeptideStructuresInterface {
@@ -64,12 +65,16 @@ export class PeptideStructuresComponent implements OnInit {
   fileUrl;
   data_print;
 
+  API_URL = '';
+
   constructor(private dataSourceBuilder: NbTreeGridDataSourceBuilder<PeptideStructuresInterface>,
               private peptidestructuresService: PeptideStructuresService,
               private route: ActivatedRoute,
               private formBuilder: FormBuilder,
               private sanitizer: DomSanitizer,
+              private env: EnvService,
   ) {
+    this.API_URL = env.apiUrl;
   }
 
   ngOnInit() {
@@ -282,7 +287,7 @@ export class PeptideStructuresComponent implements OnInit {
     }
     // tslint:disable-next-line:one-line
     else {
-      window.open('http://localhost:8000/admin/crmapp/peptidestructures/',
+      window.open(`${this.API_URL}/admin/crmapp/peptidestructures/`,
         '_blank');
     }
   }

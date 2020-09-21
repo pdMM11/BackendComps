@@ -12,6 +12,7 @@ import {
 } from '@nebular/theme';
 import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {HttpErrorResponse} from '@angular/common/http';
+import {EnvService} from "../../../services/env.service";
 
 
 interface PeptideReferencesInterface {
@@ -66,12 +67,16 @@ export class PeptideReferencesComponent implements OnInit {
   fileUrl;
   data_print;
 
+  API_URL = '';
+
   constructor(private dataSourceBuilder: NbTreeGridDataSourceBuilder<PeptideReferencesInterface>,
               private peptidereferencesService: PeptideReferencesService,
               private route: ActivatedRoute,
               private formBuilder: FormBuilder,
               private sanitizer: DomSanitizer,
+              private env: EnvService,
   ) {
+    this.API_URL = env.apiUrl;
   }
 
   ngOnInit() {
@@ -205,9 +210,9 @@ export class PeptideReferencesComponent implements OnInit {
     }
     // tslint:disable-next-line:one-line
     else {
-      window.open('http://localhost:8000/admin/crmapp/peptidereferences/',
+      window.open(`${this.API_URL}/admin/crmapp/peptidereferences/`,
         '_blank');
-      window.open('http://localhost:8000/admin/crmapp/references/',
+      window.open(`${this.API_URL}/admin/crmapp/references/`,
         '_blank');
     }
   }
@@ -345,7 +350,7 @@ export class PeptideReferencesComponent implements OnInit {
     this.put_form_ref = true;
     this.add_form_ref = false;
   }
-  
+
   keepData(data: string) {
     this.data_print = data;
 

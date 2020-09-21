@@ -22,6 +22,7 @@
               "src/assets",
               "src/favicon.ico",
               "src/favicon.png",
+              "src/env.js", // <= Add env.js here
               {
                 "glob": "**/*",
                 "input": "node_modules/leaflet/dist/images",
