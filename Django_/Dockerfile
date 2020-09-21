@@ -15,6 +15,8 @@ RUN mkdir logs
 
 ADD . /my_app_dir/
 
+COPY ./entrypoint.sh /
+
 EXPOSE 8000
 
 ENTRYPOINT ['./entrypoint.sh']
