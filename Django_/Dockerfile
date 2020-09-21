@@ -7,3 +7,4 @@ RUN pip install --upgrade pip && pip install -r requirements_django.txt
 RUN apt-get update && apt-get install -y clustalo
 ADD . /my_app_dir/
 # RUN python manage.py runserver
+
