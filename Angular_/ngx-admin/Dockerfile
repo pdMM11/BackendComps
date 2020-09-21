@@ -1,5 +1,5 @@
 # base image
-FROM node:10.16.0
+FROM node:10.16.0 as build-image
 
 # install chrome for protractor tests
 RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add -
@@ -20,5 +20,12 @@ RUN npm install -g @angular/cli@8.3.20
 # add app
 COPY . /app
 
-# start app
-ENTRYPOINT ["ng","serve","--host 0.0.0.0"]
+RUN ng build
+
+# second stage build
+
+FROM nginx:alpine
+
+COPY --from=build-image /app/dist /usr/share/nginx/html
+
+EXPOSE 80
