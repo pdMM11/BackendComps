@@ -2,12 +2,13 @@ import {Component, Input, OnInit} from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import {
   NbGetters, NbSortDirection, NbSortRequest,
-  NbTreeGridDataSource, NbTreeGridDataSourceBuilder
+  NbTreeGridDataSource, NbTreeGridDataSourceBuilder,
 } from '@nebular/theme';
 import {ProteinService} from '../../../services/protein.service';
 import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {HttpErrorResponse} from '@angular/common/http';
 import { DomSanitizer } from '@angular/platform-browser';
+import {EnvService} from '../../../services/env.service';
 
 
 interface ProteinInterface {
@@ -77,6 +78,7 @@ export class ProteinListTreeGridComponent implements OnInit {
   fileUrl;
   data_print;
 
+  API_URL = '';
 
   constructor(private dataSourceBuilder: NbTreeGridDataSourceBuilder<ProteinInterface>,
               private proteinService: ProteinService,
@@ -84,8 +86,11 @@ export class ProteinListTreeGridComponent implements OnInit {
               private router: Router,
               private formBuilder: FormBuilder,
               private sanitizer: DomSanitizer,
-              ) {
+              private env: EnvService,
+  ) {
+    this.API_URL = env.apiUrl;
   }
+
 
   ngOnInit() {
     this.fetchProtein();
@@ -258,7 +263,7 @@ export class ProteinListTreeGridComponent implements OnInit {
     }
     // tslint:disable-next-line:one-line
     else {
-      window.open('http://localhost:8000/admin/crmapp/protein/',
+      window.open(`${this.API_URL}/admin/crmapp/protein/`,
         '_blank');
     }
   }

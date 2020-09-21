@@ -11,6 +11,7 @@ import {ActivatedRoute} from '@angular/router';
 import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {HttpErrorResponse} from '@angular/common/http';
 import { DomSanitizer } from '@angular/platform-browser';
+import {EnvService} from '../../../services/env.service';
 
 
 interface TaxHostInterface {
@@ -70,12 +71,16 @@ export class TaxHostComponent implements OnInit {
   fileUrl;
   data_print;
 
+  API_URL = '';
+
   constructor(private dataSourceBuilder: NbTreeGridDataSourceBuilder<TaxHostInterface>,
               private taxhostService: TaxHostService,
               private route: ActivatedRoute,
               private formBuilder: FormBuilder,
               private sanitizer: DomSanitizer,
+              private env: EnvService,
   ) {
+    this.API_URL = env.apiUrl;
   }
 
   ngOnInit() {
@@ -284,7 +289,7 @@ export class TaxHostComponent implements OnInit {
     }
     // tslint:disable-next-line:one-line
     else {
-      window.open('http://localhost:8000/admin/crmapp/taxhost/',
+      window.open(`${this.API_URL}/admin/crmapp/taxhost/`,
         '_blank');
     }
   }
@@ -297,7 +302,8 @@ export class TaxHostComponent implements OnInit {
      'host_ncbitax', 'idhost'];
      */
     this.data_all = [] as any;
-    let data_to_print = 'idtaxonomy,commonname,family,genre,species,subspecies,virus_ncbitax,host,host_ncbitax,idhost\n';
+    let data_to_print = 'idtaxonomy,commonname,family,genre,species,' +
+      'subspecies,virus_ncbitax,host,host_ncbitax,idhost\n';
     let taxonomy = '';
     if (this.taxParam !== null) {
       taxonomy = this.taxParam;

@@ -8,6 +8,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {HttpErrorResponse} from '@angular/common/http';
 import { DomSanitizer } from '@angular/platform-browser';
+import {EnvService} from '../../../services/env.service';
 
 
 export interface TaxonomyVirusInterface {
@@ -66,13 +67,17 @@ export class TaxonomyVirusListTreeGridComponent implements OnInit {
   fileUrl;
   data_print;
 
+  API_URL = '';
+
   constructor(private dataSourceBuilder: NbTreeGridDataSourceBuilder<TaxonomyVirusInterface>,
               private taxonomyvirusService: TaxonomyVirusService,
               private route: ActivatedRoute,
               private formBuilder: FormBuilder,
               private sanitizer: DomSanitizer,
               private router: Router,
+              private env: EnvService,
   ) {
+    this.API_URL = env.apiUrl;
   }
 
   ngOnInit() {
@@ -228,7 +233,7 @@ export class TaxonomyVirusListTreeGridComponent implements OnInit {
         window.open(newUrl, '_blank');
       }
     } else {
-      window.open('http://localhost:8000/admin/crmapp/taxonomyvirus/',
+      window.open(`${this.API_URL}/admin/crmapp/taxonomyvirus/`,
         '_blank');
     }
   }
@@ -271,7 +276,7 @@ export class TaxonomyVirusListTreeGridComponent implements OnInit {
 
   saveDataFile() {
     /**
-     window.open('http://localhost:8000/taxonomyvirus/save/?search=' +  this.search_form.value,
+     window.open(`${this.API_URL}/taxonomyvirus/save/?search=` +  this.search_form.value,
      '_blank');
      */
     this.data_all = [] as any;

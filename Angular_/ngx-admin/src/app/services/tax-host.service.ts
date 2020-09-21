@@ -2,12 +2,13 @@ import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {Observable} from 'rxjs';
 import {HttpHeaders} from '@angular/common/http';
+import { EnvService } from './env.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class TaxHostService {
-  API_URL = 'http://localhost:8000';
+  API_URL = '';
   httpOptions = {
     headers: new HttpHeaders({
       'Content-Type': 'multipart/form-data',
@@ -15,7 +16,9 @@ export class TaxHostService {
     }),
   };
 
-  constructor(private httpClient: HttpClient) {
+  constructor(private httpClient: HttpClient,
+              private env: EnvService) {
+    this.API_URL = env.apiUrl;
   }
 
   getFirstPage(idtaxonomy = '2', search = '', page = 1) {
@@ -56,6 +59,6 @@ export class TaxHostService {
         'Content-Type': 'application/json',
       }),
     };
-    return this.httpClient.post<any>('http://localhost:8000/save_taxhost_results/', data, this.httpOptions);
+    return this.httpClient.post<any>(`${this.API_URL}/save_taxhost_results/`, data, this.httpOptions);
   }
 }

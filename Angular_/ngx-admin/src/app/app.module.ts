@@ -25,6 +25,7 @@ import {
 // import { AuthGuard } from './services/auth-guard.service';
 import {AuthComponent} from './auth/auth.component';
 import {CookieService} from 'ngx-cookie-service';
+import { EnvServiceProvider } from './services/env.service.provider';
 
 
 const formSetting: any = {
@@ -63,7 +64,7 @@ const formSetting: any = {
             class: NbAuthJWTToken,
             key: 'data.user.token',
           },
-          baseEndpoint: 'http://localhost:8000/',
+          // baseEndpoint: 'http://localhost:8000/',
           login: {
             // endpoint: '/rest-auth/login/',
             endpoint: 'api-token-auth/',
@@ -107,7 +108,7 @@ const formSetting: any = {
     }),
   ],
   bootstrap: [AppComponent],
-  providers: [CookieService],
+  providers: [CookieService, EnvServiceProvider],
 })
 export class AppModule {
 }
