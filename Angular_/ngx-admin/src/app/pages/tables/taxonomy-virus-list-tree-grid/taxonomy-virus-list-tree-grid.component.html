@@ -56,7 +56,7 @@
 
           {{row.data[customColumn]}}
           <p *ngIf="!verifyNull(row.data['actions'])">
-            <button nbButton (click)="goToUrl(row.data['actions'])">{{row.data['page']}}</button>
+            <button nbButton (click)="gotoURLSameApp(row.data['actions'])">{{row.data['page']}}</button>
           </p>
         </td>
       </ng-container>

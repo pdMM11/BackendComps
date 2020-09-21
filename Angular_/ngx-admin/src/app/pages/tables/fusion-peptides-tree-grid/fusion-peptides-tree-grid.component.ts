@@ -1,5 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {ActivatedRoute} from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import {
   NbGetters, NbSortDirection, NbSortRequest,
   NbTreeGridDataSource, NbTreeGridDataSourceBuilder
@@ -79,6 +79,7 @@ export class FusionPeptidesTreeGridComponent implements OnInit {
               private peptidereferencesService: PeptideReferencesService,
               private proteinService: ProteinService,
               private route: ActivatedRoute,
+              private router: Router,
               private formBuilder: FormBuilder,
               private sanitizer: DomSanitizer,
   ) {
@@ -163,22 +164,22 @@ export class FusionPeptidesTreeGridComponent implements OnInit {
            this.fetchData(this.idProt, this.idFP);
            if (this.prot_data.length > 0) {
           this.aux_inter.children.push(
-            {idfusion_peptides: '', actions: new URL(
-                'http://localhost:4201/pages/tables/protein?idprot=' + String(this.idProt)),
+            {idfusion_peptides: '', actions:
+                'http://localhost:4201/pages/tables/protein?idprot=' + String(this.idFP),
               page: 'Fusion Protein'},
           );
         }
            if (this.struct_data.length > 0) {
           this.aux_inter.children.push(
             {idfusion_peptides: '', actions: new URL(
-                'http://localhost:4201/pages/tables/peptide-structure?idpeptide=' + String(this.idProt)),
+                'http://localhost:4201/pages/tables/peptide-structure?idpeptide=' + String(this.idFP)),
               page: 'Structure'},
           );
         }
            if (this.ref_data.length > 0) {
           this.aux_inter.children.push(
             {idfusion_peptides: '', actions: new URL(
-                'http://localhost:4201/pages/tables/peptide-references?idpeptide=' + String(this.idProt)),
+                'http://localhost:4201/pages/tables/peptide-references?idpeptide=' + String(this.idFP)),
               page: 'References'},
           );
         }
@@ -186,40 +187,40 @@ export class FusionPeptidesTreeGridComponent implements OnInit {
            if (this.fetchData('Protein', this.idProt, this.idFP)) {
           this.aux_inter.children.push(
             {idfusion_peptides: '', actions: new URL(
-                'http://localhost:4201/pages/tables/protein?idprot=' + String(this.idProt)),
+                'http://localhost:4201/pages/tables/protein?idprot=' + String(this.idFP)),
               page: 'Fusion Protein'},
           );
         }
            if (this.fetchData('Structures', this.idProt, this.idFP)) {
           this.aux_inter.children.push(
             {idfusion_peptides: '', actions: new URL(
-                'http://localhost:4201/pages/tables/peptide-structure?idpeptide=' + String(this.idProt)),
+                'http://localhost:4201/pages/tables/peptide-structure?idpeptide=' + String(this.idFP)),
               page: 'Structure'},
           );
         }
            if (this.fetchData('References', this.idProt, this.idFP)) {
           this.aux_inter.children.push(
             {idfusion_peptides: '', actions: new URL(
-                'http://localhost:4201/pages/tables/peptide-references?idpeptide=' + String(this.idProt)),
+                'http://localhost:4201/pages/tables/peptide-references?idpeptide=' + String(this.idFP)),
               page: 'References'},
           );
         }
            */
           this.aux_inter.children = [
             {
-              idfusion_peptides: '', actions: new URL(
-                'http://localhost:4201/pages/tables/protein?idprot=' + String(this.idProt)),
-              page: 'Fusion Protein'
+              idfusion_peptides: '', actions:
+                '../protein?idprot=' + String(this.idFP),
+              page: 'Fusion Protein',
             },
             {
-              idfusion_peptides: '', actions: new URL(
-                'http://localhost:4201/pages/tables/peptide-structure?idpeptide=' + String(this.idProt)),
-              page: 'Structure'
+              idfusion_peptides: '', actions:
+                '../peptide-structure?idpeptide=' + String(this.idFP),
+              page: 'Structure',
             },
             {
-              idfusion_peptides: '', actions: new URL(
-                'http://localhost:4201/pages/tables/peptide-references?idpeptide=' + String(this.idProt)),
-              page: 'References'
+              idfusion_peptides: '', actions:
+                '../peptide-references?idpeptide=' + String(this.idFP),
+              page: 'References',
             },
           ];
           this.aux_inter.expanded = false;
@@ -287,7 +288,7 @@ export class FusionPeptidesTreeGridComponent implements OnInit {
       this.current_page = 1;
       this.fetchFusionPeptide();
     } else {
-      window.open('http://localhost:4201/pages/tables/fusion-peptide?search='
+      this.gotoURLSameApp('../fusion-peptide?search='
         + this.search_form.value, '_self');
     }
   }
@@ -446,6 +447,15 @@ export class FusionPeptidesTreeGridComponent implements OnInit {
 
     this.fileUrl = this.sanitizer.bypassSecurityTrustResourceUrl(window.URL.createObjectURL(blob));
 
+  }
+
+  gotoURLSameApp(directory, target= '_blank') {
+
+    const url = this.router.serializeUrl(
+      this.router.createUrlTree([directory], { relativeTo: this.route }),
+    );
+
+    window.open(decodeURIComponent(url), target);
   }
 
 

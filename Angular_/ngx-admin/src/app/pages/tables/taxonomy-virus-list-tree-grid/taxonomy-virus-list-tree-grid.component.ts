@@ -4,7 +4,7 @@ import {
   NbTreeGridDataSource, NbTreeGridDataSourceBuilder,
 } from '@nebular/theme';
 import {TaxonomyVirusService} from '../../../services/taxonomy-virus.service';
-import {ActivatedRoute} from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {HttpErrorResponse} from '@angular/common/http';
 import { DomSanitizer } from '@angular/platform-browser';
@@ -71,6 +71,7 @@ export class TaxonomyVirusListTreeGridComponent implements OnInit {
               private route: ActivatedRoute,
               private formBuilder: FormBuilder,
               private sanitizer: DomSanitizer,
+              private router: Router,
   ) {
   }
 
@@ -133,19 +134,19 @@ export class TaxonomyVirusListTreeGridComponent implements OnInit {
           this.idTax = String(aux['idtaxonomy']);
           this.aux_inter.children = [
             {
-              idtaxonomy: '', actions: new URL(
-                'http://localhost:4201/pages/tables/protein?idtax=' +
-                String(this.idTax)), page: 'Fusion Protein',
+              idtaxonomy: '', actions:
+                '../protein?idtax=' +
+                String(this.idTax), page: 'Fusion Protein',
             },
             {
-              idtaxonomy: '', actions: new URL(
-                'http://localhost:4201/pages/tables/fusion-peptide?idtax='
-                + String(this.idTax)), page: 'Fusion Peptide',
+              idtaxonomy: '', actions:
+                '../fusion-peptide?idtax='
+                + String(this.idTax), page: 'Fusion Peptide',
             },
             {
-              idtaxonomy: '', actions: new URL(
-                'http://localhost:4201/pages/tables/tax-host?idtax='
-                + String(this.idTax)), page: 'Hosts',
+              idtaxonomy: '', actions:
+                '../tax-host?idtax='
+                + String(this.idTax), page: 'Hosts',
             },
           ];
           this.aux_inter.expanded = false;
@@ -212,8 +213,12 @@ export class TaxonomyVirusListTreeGridComponent implements OnInit {
       this.current_page = 1;
       this.fetchTaxonomy();
     } else {
+      this.gotoURLSameApp('../taxonomy-virus?search='
+        + this.search_form.value, '_self');
+      /**
       window.open('http://localhost:4201/pages/tables/taxonomy-virus?search='
         + this.search_form.value, '_self');
+       */
     }
   }
 
@@ -285,7 +290,7 @@ export class TaxonomyVirusListTreeGridComponent implements OnInit {
         }
 
         this.keepData(data_to_print);
-        
+
         /**
         const data_send = {data: data_print};
         this.taxonomyvirusService.send(data_send).subscribe(
@@ -322,4 +327,13 @@ export class TaxonomyVirusListTreeGridComponent implements OnInit {
     this.fileUrl = this.sanitizer.bypassSecurityTrustResourceUrl(window.URL.createObjectURL(blob));
 
   }
+  gotoURLSameApp(directory, target= '_blank') {
+
+    const url = this.router.serializeUrl(
+      this.router.createUrlTree([directory], { relativeTo: this.route }),
+    );
+
+    window.open(decodeURIComponent(url), target);
+  }
+
 }

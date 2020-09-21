@@ -22,5 +22,3 @@ Commands used to successufully build the application:
 
   sudo docker run --rm --name angular_vfp -p 4201:4200 pedrodmmoreira/vfp_webserver:angular-httpd 
   
-----------------
-

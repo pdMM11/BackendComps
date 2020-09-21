@@ -22,6 +22,7 @@ import {FormsComponent} from '../../../pages/forms/forms.component';
 import {NbWindowService} from '@nebular/theme';
 
 import {TemplateRef, ViewChild} from '@angular/core';
+import { Router, ActivatedRoute } from '@angular/router';
 
 
 @Component({
@@ -76,7 +77,9 @@ export class HeaderComponent implements OnInit, OnDestroy {
               private proteinService: ProteinService,
               private taxonomyvirusService: TaxonomyVirusService,
               private searchService: NbSearchService,
-              private windowService: NbWindowService) {
+              private windowService: NbWindowService,
+              private route: ActivatedRoute,
+              private router: Router) {
 
 
     this.searchService.onSearchSubmit()
@@ -148,16 +151,25 @@ export class HeaderComponent implements OnInit, OnDestroy {
   openResults(val: string, FP: boolean, Prot: boolean, Tax: boolean) {
     // let id = 1;
     if (FP) {
+      /**
       const page_FP = window.open('http://localhost:4201/pages/tables/fusion-peptide?search=' + val, '_blank');
       // id = id + 1;
+       */
+      this.gotoURLSameApp('pages/tables/fusion-peptide?search=' + val);
     }
     if (Prot) {
+      /**
       const page_Prot = window.open('http://localhost:4201/pages/tables/protein?search=' + val, '_blank');
       // id = id + 1;
+       */
+      this.gotoURLSameApp('pages/tables/protein?search=' + val);
     }
     if (Tax) {
+      /**
       const page_Tax = window.open('http://localhost:4201/pages/tables/taxonomy-virus?search=' + val, '_blank');
       // id = id + 1;
+       */
+      this.gotoURLSameApp('pages/tables/taxonomy-virus?search=' + val);
     }
   }
 
@@ -187,5 +199,14 @@ export class HeaderComponent implements OnInit, OnDestroy {
       this.disabledEscTemplate,
       {title: 'Search Results', hasBackdrop: false, closeOnEsc: true},
     );
+  }
+
+  gotoURLSameApp(directory, target= '_blank') {
+
+    const url = this.router.serializeUrl(
+      this.router.createUrlTree([directory]),
+    );
+
+    window.open(decodeURIComponent(url), target);
   }
 }
