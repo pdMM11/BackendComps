@@ -26,9 +26,9 @@ COPY ./entrypoint.sh /
 
 EXPOSE 8000
 
-ENTRYPOINT ["/entrypoint.sh"]
+# ENTRYPOINT ["/entrypoint.sh"]
 
 # ENTRYPOINT ["python","manage.py","runserver"]
 
 # define the default command to run when starting the container
-CMD ["gunicorn", "--chdir", "vfp_web_server", "--bind", ":8000",  "vfp_web_server.wsgi:application"]
+CMD ["gunicorn", "--bind", ":8000", "vfp_web_server.wsgi:application"]
