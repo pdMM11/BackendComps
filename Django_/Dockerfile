@@ -7,6 +7,13 @@ ADD requirements_django.txt /my_app_dir/
 RUN pip install --upgrade pip && pip install -r requirements_django.txt
 RUN apt-get update && apt-get install -y clustalo
 RUN pip install gunicorn
+# Update the default application repository sources list
+RUN apt-get update && apt-get install -y \
+    python-dev \
+    python-pip \
+    python-setuptools \
+    build-essential \
+    git
 
 # Set variables for project name, and where to place files in container.
 ENV PROJECT=vfp_web_werver
