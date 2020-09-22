@@ -15,3 +15,5 @@ exec gunicorn vfp_web_werver.wsgi:application \
     --log-file=./logs/gunicorn.log \
     --access-logfile=./logs/gunicorn-access.log \
 "$@"
+
+exec gunicorn vfp_web_werver.wsgi
