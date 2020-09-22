@@ -7,4 +7,5 @@ ADD Dumps/Dump20200722.sql docker-entrypoint-initdb.d
 
 EXPOSE 3306
 
-ENTRYPOINT ['/entrypoint.sh', '--default-authentication-plugin=mysql_native_password']
+CMD ["mysqld", "--default-authentication-plugin", "mysql_native_password"]
+# ENTRYPOINT ['/entrypoint.sh', '--default-authentication-plugin=mysql_native_password']
