@@ -18,6 +18,7 @@ from django.urls import path
 from crmapp import views
 from rest_framework_simplejwt import views as jwt_views
 from rest_framework_jwt.views import verify_jwt_token
+from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 
 #from rest_framework import router
 
@@ -86,3 +87,5 @@ urlpatterns = [
     path(r'ml_predict/', views.ml_predict, name='ml-predict'),
     path(r'save_ml_results/', views.WriteResultsAPIView.write_ml_results, name='save-ml-predict'),
 ]
+
+urlpatterns += staticfiles_urlpatterns()
