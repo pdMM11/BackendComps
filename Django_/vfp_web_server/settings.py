@@ -27,7 +27,8 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
-# FORCE_SCRIPT_NAME = os.environ.get('DJANGO_FORCE_SCRIPT_NAME', '/subdirectory')  # without trailing slash
+
+FORCE_SCRIPT_NAME = os.environ.get('DJANGO_FORCE_SCRIPT_NAME', '/api')  # without trailing slash
 
 
 # Application definition

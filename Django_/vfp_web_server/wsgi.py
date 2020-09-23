@@ -11,7 +11,7 @@ import os
 
 from django.core.wsgi import get_wsgi_application
 
-# from django.conf import settings
+from django.conf import settings
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'vfp_web_server.settings')
 
@@ -34,5 +34,4 @@ def application(environ, start_response):
         environ['wsgi.url_scheme'] = scheme
 
     return _application(environ, start_response)
-
 """
