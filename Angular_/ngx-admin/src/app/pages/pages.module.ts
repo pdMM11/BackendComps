@@ -16,6 +16,13 @@ import {EpitopesComponent} from './tools-webserver/epitopes/epitopes.component';
 import {ClustalComponent} from './tools-webserver/clustal/clustal.component';
 import {Ng2SmartTableModule} from 'ng2-smart-table';
 import {MlPredictComponent} from './tools-webserver/ml-predict/ml-predict.component';
+
+import { LoginComponent } from './admin-pages/login/login.component';
+import { RegisterComponent } from './admin-pages/register/register.component';
+import { LogoutComponent } from './admin-pages/logout/logout.component';
+import { RequestPasswordComponent } from './admin-pages/request-password/request-password.component';
+import { ResetPasswordComponent } from './admin-pages/reset-password/reset-password.component';
+
 // import { FlexLayoutModule } from '@angular/flex-layout';
 
 
@@ -53,6 +60,14 @@ import {MlPredictComponent} from './tools-webserver/ml-predict/ml-predict.compon
     EpitopesComponent,
     ClustalComponent,
     MlPredictComponent,
+    /**
+    LoginComponent,
+    RegisterComponent,
+    LogoutComponent,
+    RequestPasswordComponent,
+    ResetPasswordComponent,
+     */
+
   ],
 })
 export class PagesModule {

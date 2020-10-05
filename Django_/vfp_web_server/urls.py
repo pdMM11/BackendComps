@@ -14,11 +14,13 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.conf import settings
+from django.urls import path, include
 from crmapp import views
 from rest_framework_simplejwt import views as jwt_views
 from rest_framework_jwt.views import verify_jwt_token
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
+from django.conf.urls.static import static
 
 #from rest_framework import router
 
@@ -86,6 +88,10 @@ urlpatterns = [
     path(r'iedb/', views.iedb, name='iedb'),
     path(r'ml_predict/', views.ml_predict, name='ml-predict'),
     path(r'save_ml_results/', views.WriteResultsAPIView.write_ml_results, name='save-ml-predict'),
+
+    path(r'^rest-auth/', include('rest_auth.urls')),
+    path(r'^rest-auth/registration/', include('rest_auth.registration.urls')),
+
 ]
 
 urlpatterns += staticfiles_urlpatterns()

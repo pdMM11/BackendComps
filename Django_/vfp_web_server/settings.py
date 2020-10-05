@@ -41,10 +41,16 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    'crmapp',
     'corsheaders',
     'django_filters',
     'django_extensions',
+    'rest_auth',
+    'rest_framework.authtoken',
+    'django.contrib.sites',
+    'allauth',
+    'allauth.account',
+    'rest_auth.registration',
+    'crmapp',
 ]
 
 MIDDLEWARE = [
@@ -82,7 +88,7 @@ WSGI_APPLICATION = 'vfp_web_server.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
 
-
+"""
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
@@ -90,6 +96,18 @@ DATABASES = {
         'USER': 'root_docker',
         'PASSWORD': 'admin',
         'HOST': 'django__db_1',   
+        'PORT': '3306',
+    }
+}
+"""
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'viral_fusion_protein',
+        'USER': 'root',
+        'PASSWORD': 'PedroDMMoreira_91195215',
+        'HOST': 'localhost',
         'PORT': '3306',
     }
 }
@@ -152,6 +170,29 @@ REST_FRAMEWORK = {
 """
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
-        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.BasicAuthentication',
     ),
 }
+REST_USE_JWT = True
+SITE_ID = 1
+
+
+
+#This is required otherwise it asks for email server
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+# ACCOUNT_EMAIL_REQUIRED = True
+# AUTHENTICATION_METHOD = 'EMAIL'
+# ACCOUNT_EMAIL_VERIFICATION = 'optional'
+
+ACCOUNT_AUTHENTICATION_METHOD = 'email'
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_USERNAME_REQUIRED = False
+
+#Following is added to enable registration with email instead of username
+AUTHENTICATION_BACKENDS = (
+ # Needed to login by username in Django admin, regardless of `allauth`
+ "django.contrib.auth.backends.ModelBackend",
+
+ # `allauth` specific authentication methods, such as login by e-mail
+ "allauth.account.auth_backends.AuthenticationBackend",
+)

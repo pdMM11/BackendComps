@@ -26,7 +26,13 @@ import {
 import {AuthComponent} from './auth/auth.component';
 import {CookieService} from 'ngx-cookie-service';
 import { EnvServiceProvider } from './services/env.service.provider';
-
+/**
+import {LoginComponent} from './pages/admin-pages/login/login.component';
+import {RegisterComponent} from './pages/admin-pages/register/register.component';
+import {LogoutComponent} from './pages/admin-pages/logout/logout.component';
+import {RequestPasswordComponent} from './pages/admin-pages/request-password/request-password.component';
+import {ResetPasswordComponent} from './pages/admin-pages/reset-password/reset-password.component';
+*/
 
 const formSetting: any = {
   redirectDelay: 0,
@@ -37,7 +43,16 @@ const formSetting: any = {
 
 
 @NgModule({
-  declarations: [AppComponent], // , AuthComponent],
+  declarations: [AppComponent,
+    /**
+    LoginComponent,
+    RegisterComponent,
+    LogoutComponent,
+    RequestPasswordComponent,
+    ResetPasswordComponent,
+     */
+
+  ], // , AuthComponent],
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
@@ -59,23 +74,23 @@ const formSetting: any = {
     NbAuthModule.forRoot({
       strategies: [
         NbPasswordAuthStrategy.setup({
-          name: 'username',
+          name: 'email',
           token: {
             class: NbAuthJWTToken,
-            key: 'data.user.token',
+            key: 'token',
           },
-          // baseEndpoint: 'http://localhost:8000/',
+          baseEndpoint: 'http://localhost:8000',
           login: {
-            // endpoint: '/rest-auth/login/',
-            endpoint: 'api-token-auth/',
-            // method: 'post',
+            endpoint: '/%5Erest-auth/login/',
+            // endpoint: 'api-token-auth/',
+            method: 'post',
             redirect: {
               success: '/pages/dashboard',
               failure: null, // stay on the same page
             },
           },
           register: {
-            endpoint: 'rest-auth/registration/',
+            endpoint: '/%5Erest-auth/registration/',
             method: 'post',
             redirect: {
               success: '/pages/dashboard',
@@ -83,15 +98,15 @@ const formSetting: any = {
             },
           },
           logout: {
-            endpoint: '/rest-auth/logout/',
+            endpoint: '/%5Erest-auth/logout/',
             method: 'post',
           },
           requestPass: {
-            endpoint: '/rest-auth/password/change/', // verify this one
+            endpoint: '/%5Erest-auth/password/change/', // verify this one
             method: 'post',
           },
           resetPass: {
-            endpoint: '/rest-auth/password/reset/',
+            endpoint: '/%5Erest-auth/password/reset/',
             method: 'post',
           },
         }),
