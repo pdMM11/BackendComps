@@ -8,17 +8,17 @@ All the Angular files are inserted within the directory "app" of its container. 
 
 Commands used to successufully build the application:
 
-  sudo docker pull pedrodmmoreira/vfp_webserver:mysql-httpd
+  sudo docker pull pedrodmmoreira/vfp_webserver:mysql-httpd-build
 
-  sudo docker pull pedrodmmoreira/vfp_webserver:django-httpd
+  sudo docker pull pedrodmmoreira/vfp_webserver:django-httpd-build
 
-  sudo docker pull pedrodmmoreira/vfp_webserver:angular-httpd 
+  sudo docker pull pedrodmmoreira/vfp_webserver:angular-httpd-build
 
   sudo docker network create VFP_NETWORK  
 
-  sudo docker run --rm --name django__db_1 --network VFP_NETWORK -p 3307:3306 pedrodmmoreira/vfp_webserver:mysql-httpd  
+  sudo docker run --rm --name django__db_1 --network VFP_NETWORK -p 3307:3306 pedrodmmoreira/vfp_webserver:mysql-httpd-build 
 
-  sudo docker run --rm  --name django__web_1 --network VFP_NETWORK -p 8000:8000 pedrodmmoreira/vfp_webserver:django-httpd  
+  sudo docker run --rm  --name django__web_1 --network VFP_NETWORK -p 8000:8000 pedrodmmoreira/vfp_webserver:django-httpd-build 
 
-  sudo docker run --rm --name angular_vfp -p 4201:4200 pedrodmmoreira/vfp_webserver:angular-httpd 
+  sudo docker run --rm --name angular_vfp -p 4201:4200 pedrodmmoreira/vfp_webserver:angular-httpd-build
   
