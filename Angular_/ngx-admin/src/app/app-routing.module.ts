@@ -9,7 +9,6 @@ import {
   NbResetPasswordComponent,
 } from '@nebular/auth';
 import {AuthGuard} from './services/auth-guard.service';
-import {AuthComponent} from './auth/auth.component';
 
 /**
 import {LoginComponent} from './pages/admin-pages/login/login.component';
@@ -18,6 +17,7 @@ import {LogoutComponent} from './pages/admin-pages/logout/logout.component';
 import {RequestPasswordComponent} from './pages/admin-pages/request-password/request-password.component';
 import {ResetPasswordComponent} from './pages/admin-pages/reset-password/reset-password.component';
 */
+import {RegisterComponent} from './pages/admin-pages/register/register.component';
 
 const routes: Routes = [
   {
@@ -37,11 +37,10 @@ const routes: Routes = [
       {
         path: 'login',
         component: NbLoginComponent,
-        // component: AuthComponent,
       },
       {
         path: 'register',
-        component: NbRegisterComponent,
+        component: RegisterComponent,
       },
       {
         path: 'logout',

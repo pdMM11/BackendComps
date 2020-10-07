@@ -23,7 +23,7 @@ import {
   NbSelectModule,
 } from '@nebular/theme';
 // import { AuthGuard } from './services/auth-guard.service';
-import {AuthComponent} from './auth/auth.component';
+// import {AuthComponent} from './auth/auth.component';
 import {CookieService} from 'ngx-cookie-service';
 import { EnvServiceProvider } from './services/env.service.provider';
 /**
@@ -33,6 +33,7 @@ import {LogoutComponent} from './pages/admin-pages/logout/logout.component';
 import {RequestPasswordComponent} from './pages/admin-pages/request-password/request-password.component';
 import {ResetPasswordComponent} from './pages/admin-pages/reset-password/reset-password.component';
 */
+import {RegisterComponent} from './pages/admin-pages/register/register.component';
 
 const formSetting: any = {
   redirectDelay: 0,
@@ -52,7 +53,9 @@ const formSetting: any = {
     ResetPasswordComponent,
      */
 
-  ], // , AuthComponent],
+    RegisterComponent,
+
+  ],
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
