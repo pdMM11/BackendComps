@@ -28,6 +28,6 @@ FROM nginx:alpine
 
 COPY --from=build-image /app/dist /usr/share/nginx/html
 
-COPY --from=build-image /app/ngx-admin/nginx.conf.d/default.conf /etc/nginx/conf.d/default.conf
+COPY --from=build-image /app/nginx.conf.d/default.conf /etc/nginx/conf.d/default.conf
 
 EXPOSE 80
