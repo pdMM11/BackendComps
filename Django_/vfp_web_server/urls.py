@@ -91,6 +91,8 @@ urlpatterns = [
 
     path(r'^rest-auth/', include('rest_auth.urls')),
     path(r'^rest-auth/registration/', include('rest_auth.registration.urls')),
+    
+    path(r'weblogobackend/', views.weblogologomaker, name='weblogologomaker'),
 
 ]
 
