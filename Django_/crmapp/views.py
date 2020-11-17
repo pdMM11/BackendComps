@@ -35,6 +35,16 @@ import subprocess
 from weblogo import *
 
 
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+
+
+import logomaker
+
+import base64
+
+
 class CustomPagination(PageNumberPagination):
     # for the views that require the entirety of the data
     page_size = 0
@@ -64,7 +74,150 @@ def weblogo(request):
     raise Http404
 
 
-def weblogo_aux(seqs):
+@api_view(["POST"])
+@csrf_exempt
+def weblogologomaker(request):
+    if request.method == "POST":
+        # seqs = unquote(request.GET.get('seq'))
+        data = request.data
+        seqs = data['seqs']
+        try:
+            type_output = data['output']
+        except:
+            type_output = "png"
+        try:
+            type_os = data['os']
+        except:
+            type_os = "linux"
+
+
+        output = weblogo_aux(seqs, type_os)
+
+        in_file = "unaligned.fasta"
+        out_file = "aligned.fasta"
+
+        file = open(out_file, "r")
+        seqs = read_seq_data(file, alphabet="ACDEFGHIKLMNPQRSTVWY-")
+        logodata = LogoData.from_seqs(seqs)
+        logooptions = LogoOptions()
+        logooptions.title = "VFP WEBSERVER"
+        logoformat = LogoFormat(logodata, logooptions)
+        weblogo_txt = txt_formatter(logodata, logoformat)
+
+        # weblogo_jpeg = jpeg_formatter(logodata, logoformat)
+
+        weblogo_file = "weblogo.txt"
+        weblogo = open(weblogo_file, "w")
+        data_weblogo = str(weblogo_txt)[2:len(str(weblogo_txt)) - 1].replace('\\n', '\n').replace('\\t', '\t')
+        weblogo.write(data_weblogo)
+        weblogo.close()
+
+        filename = 'weblogo.txt'
+
+        weblogoDf = pd.read_csv(filename, skiprows=7, sep='\t')
+
+
+        weblogoDf = weblogoDf[:-1]
+
+        columns = []
+        for i in weblogoDf.columns:
+            j = i.replace(' ', '')
+            columns.append(j)
+        weblogoDf.columns = columns
+
+        weblogo_entropyes = weblogoDf.loc[:, weblogoDf.columns[1:len(weblogoDf.columns) - 4]]
+
+        entropies = list((np.log2(20) - weblogoDf.loc[:, 'Entropy']))
+
+        weblogo_entropyes = weblogo_entropyes.mul(entropies, axis=0)
+
+        family_weblogo = weblogo_entropyes.drop(['-'], axis=1)
+
+        if type_output == "txt":
+            return JsonResponse(family_weblogo.to_json(orient="index"), safe=False)
+
+        else:
+            data = logomaker.transform_matrix(family_weblogo)
+
+            # create figure
+            height_per_row = 2
+            width_per_col = 1.5
+
+            line_size = 25
+
+            num_rows = int(data.shape[0] / line_size) + 1
+
+            fig = plt.figure(figsize=[width_per_col * line_size,
+                                      height_per_row * num_rows])
+
+            max_df = data.sum(axis=1).max()
+
+            for i in range(0, int(data.shape[0] / line_size)):
+                # set axes limits and label
+
+                ax = plt.subplot2grid((num_rows, 1), (i, 0))
+                ax.spines['right'].set_visible(False)
+                ax.spines['top'].set_visible(False)
+                ax.set_ylim(bottom=0, top=max_df)
+
+                # ax.set_xlabel("Type of peptide")
+                ax.set_ylabel('Bits')
+
+                logo = logomaker.Logo(data.loc[range(i * line_size, (i + 1) * line_size), :],
+                                      ax=ax,
+                                      color_scheme='NajafabadiEtAl2017', )
+
+                # style using Axes methods
+                # logo.ax.set_ylabel("$-\Delta \Delta G$ (kcal/mol)", labelpad=-1)
+                # logo.ax.xaxis.set_ticks_position('none')
+                logo.ax.set_ylim([0, max_df])
+
+                # style using Logo methods
+                # logo.style_glyphs(ceiling = max_df)
+
+            if i * line_size != data.shape[0]:
+
+                i += 1
+
+                data_aux = data
+
+                for j in range(i * line_size, (i + 1) * line_size):
+                    data_aux = data_aux.append(pd.Series(0, index=data_aux.columns), ignore_index=True)
+
+                ax = plt.subplot2grid((num_rows, 1), (i, 0))
+
+                ax.spines['right'].set_visible(False)
+                ax.spines['top'].set_visible(False)
+                ax.set_ylim(bottom=0, top=max_df)
+
+                # ax.set_xlabel("Type of peptide")
+                ax.set_ylabel('Bits')
+
+                logo = logomaker.Logo(data_aux.loc[range(i * line_size, (i + 1) * line_size), :],
+                                      ax=ax,
+                                      color_scheme='NajafabadiEtAl2017', )
+
+                # style using Axes methods
+                # logo.ax.set_ylabel("$-\Delta \Delta G$ (kcal/mol)", labelpad=-1)
+                # logo.ax.xaxis.set_ticks_position('none')
+                logo.ax.set_xlim([i * line_size - 0.5, (i + 1) * line_size - 0.5])
+                logo.ax.set_ylim([0, max_df])
+
+            image_path = "weblogo.png"
+            fig.savefig("weblogo.png")
+
+            with open(image_path, "rb") as image_file:
+                image_data = base64.b64encode(image_file.read()).decode('utf-8')
+
+            return HttpResponse(image_data, content_type="image/png")
+
+
+
+        # return JsonResponse({'data': output}, safe=False)
+    raise Http404
+
+
+def weblogo_aux(seqs, type_os = "linux"):
     in_file = "unaligned.fasta"
     out_file = "aligned.fasta"
 
@@ -73,14 +226,15 @@ def weblogo_aux(seqs):
     file.close()
     clustalomega_cline = ClustalOmegaCommandline(infile=in_file, outfile=out_file, verbose=True, auto=False)
     print(clustalomega_cline)
-    #  os.system('cmd /c crmapp\clustal-omega-1.2.2-win64\\' + str(clustalomega_cline) + ' --force')
+    if type_os == "windows":
+        os.system('cmd /c crmapp\clustal-omega-1.2.2-win64\\' + str(clustalomega_cline) + ' --force')
+    else:
+        # cmd = 'crmapp/clustal-omega-1.2.2-win64s/' + str(clustalomega_cline) + ' --force'
+        cmd = str(clustalomega_cline) + ' --force'
+        # subprocess.Popen(['/bin/bash', '-c', 'chmod u+x clustalo'])
+        p = subprocess.Popen(['/bin/bash', '-c', cmd])
 
-    # cmd = 'crmapp/clustal-omega-1.2.2-win64s/' + str(clustalomega_cline) + ' --force'
-    cmd = str(clustalomega_cline) + ' --force'
-    # subprocess.Popen(['/bin/bash', '-c', 'chmod u+x clustalo'])
-    p = subprocess.Popen(['/bin/bash', '-c', cmd])
-
-    p.communicate()
+        p.communicate()
 
 
     """
