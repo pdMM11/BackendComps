@@ -84,6 +84,10 @@ urlpatterns = [
 
 
     path(r'clustal/', views.clustal, name='clustal'),
+
+    path(r'clustal_all/', views.clustal_all, name='clustal_all'),
+    path(r'clustal_tree/', views.send_clustal_tree, name='send_clustal_tree'),
+
     path(r'weblogoclustal/', views.weblogo, name='weblogo'),
     path(r'iedb/', views.iedb, name='iedb'),
     path(r'ml_predict/', views.ml_predict, name='ml-predict'),
@@ -97,3 +101,4 @@ urlpatterns = [
 ]
 
 urlpatterns += staticfiles_urlpatterns()
+
