@@ -43,6 +43,7 @@ import matplotlib.pyplot as plt
 import logomaker
 
 import base64
+import json
 
 
 class CustomPagination(PageNumberPagination):
@@ -91,6 +92,10 @@ def weblogologomaker(request):
             type_os = "linux"
 
 
+        ##########################
+        # type_os = "windows"
+        #######################
+
         output = weblogo_aux(seqs, type_os)
 
         in_file = "unaligned.fasta"
@@ -134,7 +139,14 @@ def weblogologomaker(request):
         family_weblogo = weblogo_entropyes.drop(['-'], axis=1)
 
         if type_output == "txt":
-            return JsonResponse(family_weblogo.to_json(orient="index"), safe=False)
+
+            weblogo = open(weblogo_file)
+
+            data = weblogo.read()
+
+            return HttpResponse(data, content_type="text/plain")
+
+            # return JsonResponse(family_weblogo.to_json(orient="index"), safe=False)
 
         else:
             data = logomaker.transform_matrix(family_weblogo)
@@ -209,9 +221,19 @@ def weblogologomaker(request):
             with open(image_path, "rb") as image_file:
                 image_data = base64.b64encode(image_file.read()).decode('utf-8')
 
-            return HttpResponse(image_data, content_type="image/png")
+            # base64data = open("base64.txt","w")
 
+            # base64data.write(image_data)
 
+            # print(image_data)
+
+            # base64data = open("base64.txt")
+
+            # send_data = base64data.read()
+
+            # return HttpResponse(image_data, content_type="image/png")
+
+            return HttpResponse(image_data, content_type="text/plain")
 
         # return JsonResponse({'data': output}, safe=False)
     raise Http404
@@ -332,6 +354,72 @@ def clustal(request):  # error no urllib
     # os.system('cmd /c"python clustalo.py --email' +  email +  ' --stype protein' ' unaligned.fasta"')
 
     return render(request, 'home.html')
+
+@api_view(["POST"])
+@csrf_exempt
+def clustal_all(request):
+    if request.method == "POST":
+        # seqs = unquote(request.GET.get('seq'))
+        data = request.data
+        seqs = data['seqs']
+        type = data['type']
+
+        try:
+            type_os = data['os']
+        except:
+            type_os = "linux"
+
+        ##########################
+        # type_os = "windows"
+        ###########################
+
+        if type == "fasta":
+            out_file = "aligned.fasta"
+
+        elif type == "phylip":
+            out_file = "aligned_clustal.phy"
+
+        else:
+            out_file = "aligned_clustal.alm"
+            type = "clu"
+
+        in_file = "unaligned_clustal.fasta"
+
+        file = open(in_file, "w")
+        file.write(seqs)
+        file.close()
+
+        clustalomega_cline = ClustalOmegaCommandline(infile=in_file,
+                                                     outfile=out_file,
+                                                     verbose=True,
+                                                     auto=False,
+                                                     outfmt=type,
+                                                     guidetree_out="tree.dnd")
+        print(clustalomega_cline)
+        if type_os == "windows":
+            os.system('cmd /c crmapp\clustal-omega-1.2.2-win64\\' + str(clustalomega_cline) + ' --force')
+        else:
+            # cmd = 'crmapp/clustal-omega-1.2.2-win64s/' + str(clustalomega_cline) + ' --force'
+            cmd = str(clustalomega_cline) + ' --force'
+            # subprocess.Popen(['/bin/bash', '-c', 'chmod u+x clustalo'])
+            p = subprocess.Popen(['/bin/bash', '-c', cmd])
+
+            p.communicate()
+
+
+        file_out = open(out_file, "r")
+
+        data_send = file_out.read()
+
+        # data_send['dnd'] = file_tree_out.read()
+
+        return HttpResponse(data_send, content_type="text/plain")
+
+
+def send_clustal_tree(request):
+    file_tree_out = open("tree.dnd", "r")
+    data_send = file_tree_out.read()
+    return HttpResponse(data_send, content_type="text/plain")
 
 
 def ml_predict(request):
