@@ -1,8 +1,26 @@
-import {Component, OnInit} from '@angular/core';
+import {ChangeDetectorRef, Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 import {FormControl} from '@angular/forms';
 import {ActivatedRoute} from '@angular/router';
 import {WeblogoService} from '../../../services/weblogo.service';
 import {HttpErrorResponse} from '@angular/common/http';
+import { DomSanitizer } from '@angular/platform-browser';
+import {ProteinService} from '../../../services/protein.service';
+import {isString} from 'util';
+
+
+interface ProteinInterface {
+  idprotein?: string;
+  name?: string;
+  class_field?: string;
+  activation?: string;
+  name_fusogenic_unit?: string;
+  location_fusogenic?: string;
+  sequence_fusogenic?: string;
+  uniprotid?: object;
+  ncbiid?: string;
+  idtaxonomy?: object;
+  virus?: string;
+}
 
 @Component({
   selector: 'ngx-weblogo',
@@ -18,12 +36,41 @@ export class WeblogoComponent implements OnInit {
   option = ' ';
   clustal_result = '';
 
+  isImageLoading = true;
+
+  data_image = '';
+
+  aux_data= '';
+
+  // @ViewChild('imgRef', {static: false}) img: ElementRef;
+
   constructor(private route: ActivatedRoute,
-              private weblogo: WeblogoService) {
+              private domSanitizer: DomSanitizer,
+              private cdRef: ChangeDetectorRef,
+              private weblogo: WeblogoService,
+              private protein: ProteinService) {
   }
 
   ngOnInit() {
-    this.query_seq = this.route.snapshot.queryParamMap.get('sequence');
+    const query_seq_id = this.route.snapshot.queryParamMap.get('sequence');
+
+    const seqs_id = query_seq_id.split(',');
+
+    // let seqs_data = '';
+
+    for (let i = 0; i < seqs_id.length; i++) {
+      // seqs_data = seqs_data + '>' + seqs_id[i] + '\n';
+      this.protein.getPage(1, 'Prot', '', seqs_id[i]).subscribe((data: Array<object>) => {
+        this.aux_query_seq(seqs_id[i], data['results'][0]['sequence_fusogenic']);
+      });
+      // seqs_data = seqs_data + this.aux_data + '\n';
+      // alert(seqs_data);
+    }
+    // this.query_seq = this.aux_data;
+  }
+
+  aux_query_seq(seqid, data) {
+    this.query_seq = this.query_seq + '>' + seqid + '\n' + data + '\n';
   }
 
   gotoWebLogo(image: boolean = true): void {
@@ -109,6 +156,153 @@ export class WeblogoComponent implements OnInit {
       }
     }
   }
+
+  getImageFromService() {
+    this.isImageLoading = true;
+
+    if ((this.query_seq.match(/>/g) || []).length > 2)  {
+      this.weblogo.getImage(this.query_seq, 'png').subscribe(data => {
+
+        // this.createImageFromBlob(data);
+
+        let data_string = data as string;
+
+        data_string = 'data:image/png;base64, ' + data_string;
+
+        // alert(data_string);
+
+        this.saveImage(data_string);
+        // this.transform(data);
+        this.isImageLoading = false;
+      }, error => {
+        this.isImageLoading = false;
+        alert('ERROR');
+        // console.log(error);
+      });
+    } else if ((this.sequence.value.match(/>/g) || []).length > 2) {
+      this.weblogo.getImage(this.sequence.value, 'png').subscribe(data => {
+
+        // this.createImageFromBlob(data);
+
+        let data_string = data as string;
+
+        data_string = 'data:image/png;base64, ' + data_string;
+
+        // alert(data_string);
+
+        this.saveImage(data_string);
+        // this.transform(data);
+        this.isImageLoading = false;
+      }, error => {
+        this.isImageLoading = false;
+        alert('ERROR');
+        // console.log(error);
+      });
+    } else {
+      alert('ERROR: ENTER AT LEAST 3 SEQUENCES');
+    }
+  }
+
+  /**
+  createImageFromBlob(image: Blob) {
+    const reader = new FileReader();
+    // alert(JSON.stringify(JSON.stringify(image)));
+    reader.addEventListener('load', () => {
+      const data = reader.result as string;
+      this.imageToShow = data;
+      // this.imageToShow = this.domSanitizer.bypassSecurityTrustResourceUrl(data);
+      alert(this.imageToShow);
+      this.saveImage(data);
+      // alert(data);
+    }, false);
+    if (image) {
+      reader.readAsDataURL(image);
+    }
+  }
+  */
+
+  // Call this method in the image source, it will sanitize it.
+  transform() {
+    return this.domSanitizer.bypassSecurityTrustResourceUrl(this.data_image);
+  }
+
+
+  saveImage(data: any) {
+    this.data_image = data;
+    this.transform();
+  }
+
+
+  downloadWeblogoFile() {
+    if ((this.query_seq.match(/>/g) || []).length > 2)  {
+      this.isImageLoading = true;
+      this.weblogo.getImage(this.query_seq, 'txt').subscribe(data => {
+        const data_result = data as string;
+        alert(data_result);
+        const blob = new Blob([data_result], {type: 'text/plain'});
+        const url = window.URL.createObjectURL(blob);
+        window.open(url);
+      }, error => {
+        this.isImageLoading = false;
+        alert('ERROR');
+      });
+    } else if ((this.sequence.value.match(/>/g) || []).length > 2) {
+        this.isImageLoading = true;
+        this.weblogo.getImage(this.query_seq, 'txt').subscribe(data => {
+          const data_result = data as string;
+          alert(data_result);
+          const blob = new Blob([data_result], {type: 'text/plain'});
+          const url = window.URL.createObjectURL(blob);
+          window.open(url);
+        }, error => {
+          this.isImageLoading = false;
+          alert('ERROR');
+        });
+    } else {
+      alert('ERROR: ENTER AT LEAST 3 SEQUENCES');
+    }
+    /**
+    this.isImageLoading = true;
+    this.weblogo.getImage(this.query_seq, 'txt').subscribe(data => {
+      const blob = new Blob([data], {type: 'text/plain'});
+      const url = window.URL.createObjectURL(blob);
+      window.open(url);
+    }, error => {
+      this.isImageLoading = false;
+      alert('ERROR');
+    });
+     */
+  }
+
+
+  /**
+  getBlob (b64Data) {
+    contentType = '';
+    sliceSize = 512;
+
+    b64Data = b64Data.replace(/data\:image\/(jpeg|jpg|png)\;base64\,/gi, '');
+
+    let byteCharacters = atob(b64Data);
+    let byteArrays = [];
+
+    for (let offset = 0; offset < byteCharacters.length; offset += sliceSize) {
+      let slice = byteCharacters.slice(offset, offset + sliceSize);
+
+      let byteNumbers = new Array(slice.length);
+      for (let i = 0; i < slice.length; i++) {
+        byteNumbers[i] = slice.charCodeAt(i);
+      }
+
+      let byteArray = new Uint8Array(byteNumbers);
+
+      byteArrays.push(byteArray);
+    }
+
+    let blob = new Blob(byteArrays, {type: contentType});
+    return blob;
+  }
+   */
+
 }
 
 /**
