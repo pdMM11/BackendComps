@@ -1,3 +1,9 @@
+import { Injectable } from '@angular/core';
+import { HttpClient, HttpErrorResponse} from '@angular/common/http';
+import { HttpHeaders } from '@angular/common/http';
+import {EnvService} from './env.service';
+import {Observable} from 'rxjs';
+
 export interface dataseqs{
   seqs?: string;
   output?: string;
@@ -38,3 +44,4 @@ export class WeblogoService {
     return this.httpClient.post(`${this.API_URL}/weblogobackend/`, this.data , this.httpOptions);
   }
 }
+
