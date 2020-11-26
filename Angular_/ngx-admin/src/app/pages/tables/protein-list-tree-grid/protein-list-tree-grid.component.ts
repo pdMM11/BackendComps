@@ -329,7 +329,20 @@ export class ProteinListTreeGridComponent implements OnInit {
       }
     } else if (type === 'CLUSTAL') {
       if ((this.search_tools.match(/>/g) || []).length > 2) {
-        this.gotoURLSameApp('../../tools/clustal?sequence=' + encodeURI(this.search_tools));
+
+        let string_url = '';
+
+        const seqs = this.search_tools.split('\n');
+
+        for (let i = 0; i < seqs.length; i++) {
+          if (seqs[i][0] === '>') {
+            string_url = string_url + seqs[i].substring(1) + ',';
+          }
+        }
+
+        string_url = string_url.substring(0, string_url.length - 1);
+
+        this.gotoURLSameApp('../../tools/clustal?sequence=' + encodeURI(string_url));
         /**
          window.open('http://localhost:4201/pages/tools/clustal?sequence=' + encodeURI(this.search_tools),
          '_blank');
@@ -360,7 +373,20 @@ export class ProteinListTreeGridComponent implements OnInit {
       }
     } else if (type === 'WEBLOGO') {
       if ((this.search_tools.match(/>/g) || []).length > 1) {
-        this.gotoURLSameApp('../../tools/weblogo?sequence=' + encodeURI(this.search_tools));
+
+        let string_url = '';
+
+        const seqs = this.search_tools.split('\n');
+
+        for (let i = 0; i < seqs.length; i++) {
+          if (seqs[i][0] === '>') {
+            string_url = string_url + seqs[i].substring(1) + ',';
+          }
+        }
+
+        string_url = string_url.substring(0, string_url.length - 1);
+
+        this.gotoURLSameApp('../../tools/weblogo?sequence=' + encodeURI(string_url));
         /**
         window.open('http://localhost:4201/pages/tools/weblogo?sequence=' + encodeURI(this.search_tools),
           '_blank');
